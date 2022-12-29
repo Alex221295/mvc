@@ -29,7 +29,7 @@ class Db
     {
         $config = (include 'config.php')['db'];
         $this->dbh = new \PDO(
-            'mysql:host='.$config['host'].';dbname='.$config['dbname'].';',
+            'mysql:host=' . $config['host'] . ';dbname=' . $config['dbname'] . ';',
             $config['username'],
             $config['password']
 
@@ -37,19 +37,12 @@ class Db
 
     }
 
-    public function query($sql,$data = [],$class)
+    public function query($sql, $class)
     {
         $sth = $this->dbh->query($sql);
-        $sth->execute($data);
-        $data = $sth->fetchAll(PDO::FETCH_ASSOC);
-        $model = new Arcticle();
-        foreach ($data as $row){
-            foreach ($row as $key=>$val){
-                $model->$key = $val;
-            }
-            $obj[] = $model;
-        }
-        return ($obj);
+        $sth->execute();
+        return $sth->fetchAll(\PDO::FETCH_CLASS,$class);
+
     }
 
 
