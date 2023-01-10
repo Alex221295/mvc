@@ -4,5 +4,5 @@ namespace App\Model;
 
 interface HasPrice
 {
-    public function getPrice(): float;
+    public function getPrice(): int;
 }

@@ -7,25 +7,20 @@ use PDO;
 
 class Db
 {
-//    public static $servername = "localhost";
-//    public static $database = "MVC";
-//    public static $username = "alex";
-//    public static $password = "";
-//
-//    public static function connection()
-//    {
-//        $conn = mysqli_connect(self::$servername, self::$username, self::$password, self::$database);
-//// Проверяем соединение
-//        if (!$conn) {
-//            die("Connection failed: " . mysqli_connect_error());
-//        }
-//        echo "Connected successfully";
-//        mysqli_close($conn);
-//
-
     protected $dbh;
+    protected static $instance = null;
 
-    public function __construct()
+    public static function instance()
+    {
+        if (self::$instance === null) {
+            return self::$instance = new self();
+        } else {
+            return self::$instance;
+
+        }
+    }
+
+    protected function __construct()
     {
         $config = (include 'config.php')['db'];
         $this->dbh = new \PDO(
@@ -37,12 +32,24 @@ class Db
 
     }
 
-    public function query($sql, $class)
+    public function query($sql, $class,$id = null)
     {
-        $sth = $this->dbh->query($sql);
-        $sth->execute();
-        return $sth->fetchAll(\PDO::FETCH_CLASS,$class);
+//        de($sql);
+        $sth = $this->dbh->prepare($sql);
+        $sth->execute([':id'=>$id]);
+        return $sth->fetchAll(\PDO::FETCH_CLASS, $class);
 
+    }
+
+    public function execute($sql, $data): bool
+    {
+        $sth = $this->dbh->prepare($sql);
+        return $sth->execute($data);
+    }
+
+    public function lastId()
+    {
+        return $this->dbh->lastInsertId();
     }
 
 
