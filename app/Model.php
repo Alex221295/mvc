@@ -26,10 +26,8 @@ class Model
     }
 
 
-    public function insert()
+    public function insert($propeties)
     {
-        $propeties = get_object_vars($this);
-        de($propeties);
         $columns = [];
         $binds = [];
         $data = [];
@@ -49,7 +47,6 @@ class Model
     public function update($id, array $data)
     {
         $product = static::findOne($id);
-//        unset($product[0]->id);
         $title = [];
         $ids[":id"] = $id;
 
@@ -57,6 +54,7 @@ class Model
             $title[] = $key;
         }
         $productInfo = array_combine($title, $data);
+        unset($productInfo['id']);
         $sql = 'UPDATE ' . static::TABLE . ' SET ';
         foreach ($productInfo as $name => $value) {
             $sql .= $name . ' = \'' . $value . '\' , ';
@@ -67,14 +65,31 @@ class Model
         $db->execute($sql, $ids);
     }
 
-    public function save($id = null, $data = null)
+    public function delete($id)
+    {
+        $ids[":id"] = $id;
+        $sql = 'DELETE FROM ' . static::TABLE . ' WHERE id = :id';
+
+//        de($sql);
+        $db = Db::instance();
+        $db->execute($sql,$ids);
+    }
+
+    public function load($fileData = []){
+        foreach ($fileData as $properties=>$value){
+            $this->$properties = $value;
+        }
+    }
+
+    public function save()
     {
         $getValue = get_object_vars($this);
-        $reflector = new \ReflectionObject($this);
-//        $properties = $reflector->getProperties();
-//        $getTitle = $getValue->title;
+        if (isset($this->id)){
+            $this->update($this->id,$getValue);
+        }else{
+            $this->insert($getValue);
+        }
 
-        de($getValue);
 
     }
 }
