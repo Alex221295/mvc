@@ -1,11 +1,7 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 
-use App\Model\Arcticle;
-use App\Model\User;
-use App\Model\Product;
-use App\View;
-
+use App\Controllers\Product;
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
@@ -17,10 +13,9 @@ function de($data)
     exit();
 }
 
-$products = new \App\Controllers\Product();
+$products = new Product();
 $products->action();
 
-//$view->display(__DIR__ . '/Templates/index.php');
 require_once __DIR__ . '/router/routers.php';
 
 
